@@ -1,8 +1,10 @@
 package com.alex;
 
 import com.alex.config.DataSourceConfig;
-import com.alex.dao.ReportRepository;
-import com.alex.model.Report;
+import com.alex.dao.ObjectContainerRepository;
+import com.alex.model.Device;
+import com.alex.model.ObjectContainer;
+import com.alex.service.DeviceService;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.util.List;
@@ -11,28 +13,36 @@ public class App {
 
     public static void main( String[] args ) {
         var applicationContext = new AnnotationConfigApplicationContext(DataSourceConfig.class);
-        var reportRepository = applicationContext.getBean(ReportRepository.class);
+        var ocRepository = applicationContext.getBean(ObjectContainerRepository.class);
+        var deviceService = applicationContext.getBean(DeviceService.class);
 
-        var report = new Report();
-        report.setName("report1");
-        reportRepository.save(report);
+        var container1 = new ObjectContainer("first_level", 1L);
+        var container2 = new ObjectContainer("second_level", 2L);
+        var container3 = new ObjectContainer("third_level", 3L);
+        var containers = List.of(container1, container2, container3);
 
-        new Report();
-        report.setName("report2");
-        report.setGenerated(true);
-        reportRepository.save(report);
+        ocRepository.saveAll(containers);
 
-        new Report();
-        report.setName("report3");
-        report.setGenerated(true);
-        reportRepository.save(report);
+        var topDevice = new Device();
+        topDevice.setTreeName("Azure_device");
+        topDevice.setObjectContainers(containers);
+        topDevice.setModified(23414L);
 
-        System.out.println("String removing entities");
-//        var r1 = new Report();
-//        r1.setName("report11");
-//        var r2 = new Report();
-//        r2.setName("report2");
-//        reportRepository.deleteInBatch(List.of(r1, r2));
-        reportRepository.deleteAllByNameIn(List.of("report1", "report2"));
+        deviceService.save(topDevice);
+
+        var device = new Device();
+        device.setTreeName("750d02_uswest_Azure_device");
+        device.setTopLevelDevice(topDevice);
+        device.setObjectContainers(List.of(container1, container2));
+        device.setModified(23420L);
+
+        deviceService.save(device);
+
+        System.out.println("DB initialization has finished");
+        System.out.println("============================================================================================================================================================");
+
+        deviceService.execute();
+
+        System.exit(0);
     }
 }

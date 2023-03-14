@@ -65,6 +65,12 @@
       <artifactId>postgresql</artifactId>
       <version>42.5.1</version>
     </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.20</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -76,10 +82,41 @@
         <configuration>
           <source>${java-version}</source>
           <target>${java-version}</target>
-<!--          <compilerArgument>-Xlint:all</compilerArgument>-->
-<!--          <showWarnings>true</showWarnings>-->
-<!--          <showDeprecation>true</showDeprecation>-->
-<!--          <useIncrementalCompilation>false</useIncrementalCompilation>-->
+          <compilerArgument>-Xlint:all</compilerArgument>
+          <showWarnings>true</showWarnings>
+          <showDeprecation>true</showDeprecation>
+          <useIncrementalCompilation>false</useIncrementalCompilation>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.hibernate.orm.tooling</groupId>
+        <artifactId>hibernate-enhance-maven-plugin</artifactId>
+        <version>5.4.23.Final</version>
+        <executions>
+          <execution>
+            <configuration>
+              <enableLazyInitialization>true</enableLazyInitialization>
+            </configuration>
+            <goals>
+              <goal>enhance</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <mainClass>com.alex.App</mainClass>
         </configuration>
       </plugin>
     </plugins>
